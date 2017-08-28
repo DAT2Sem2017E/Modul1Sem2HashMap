@@ -11,37 +11,73 @@ import java.util.List;
 public class Sem2HashMap {
 
     private KeyValuePair[] internal;
+    private int size;
 
     public Sem2HashMap() {
         internal = new KeyValuePair[ 3 ];
+        size = 0;
     }
-    
+
     public Address get( String key ) {
-        int index = key.hashCode() % internal.length;
-        return internal[ index ].value;
-    }    
+        int index = findIndex( key );
+        if ( internal[ index ] == null ) {
+            return null;
+        } else {
+            return internal[ index ].value;
+        }
+    }
+
+    private int findIndex( String key ) {
+        int index = Math.abs( key.hashCode() ) % internal.length;
+        while ( internal[ index ] != null
+                && !internal[ index ].key.equals( key ) ) {
+            index = ( index + 1 ) % internal.length;
+        }
+        return index;
+    }
 
     public void put( String key, Address value ) {
-        int index = key.hashCode() % internal.length;
-        KeyValuePair kp = new KeyValuePair( key, value );
-        internal[ index ] = kp;
+        int index = findIndex( key );
+        if ( internal[ index ] == null ) {
+            internal[ index ] = new KeyValuePair( key, value );
+            size ++;
+            if (size*4 > internal.length*3) {
+                extend();
+            }
+        } else {
+            internal[ index ].value = value;
+        }
     }
 
     public boolean containsKey( String key ) {
-        int index = key.hashCode() % internal.length;
+        int index = findIndex(key);
         return internal[ index ] != null;
+    }
+    
+    public void remove(String key){
+        int index = findIndex(key);
+        if (internal[index] == null) return;
+        internal[index] = null; // remove the key
+        size --;
+        index = (index + 1) % internal.length;
+        ArrayList<KeyValuePair> mayMove = new ArrayList();
+        while (internal[index] != null){
+            mayMove.add( internal[index]);
+            internal[index] = null;
+            size--;
+            index = (index + 1) % internal.length;
+        }
+        for (KeyValuePair kp : mayMove)
+            put(kp.key, kp.value);
+        if (size*4 < internal.length){
+            reduceSize();
+        }
     }
 
     public int size() {
-        int s = 0;
-        for ( int i = 0; i < internal.length; i++ ) {
-            if ( internal[ i ] != null ) {
-                s++;
-            }
-        }
-        return s;
+        return size;
     }
-    
+
     public List<Address> values() {
         ArrayList<Address> all = new ArrayList();
         for ( int i = 0; i < internal.length; i++ ) {
@@ -50,5 +86,25 @@ public class Sem2HashMap {
             }
         }
         return all;
+    }
+
+    private void extend() {
+        KeyValuePair[] existing = internal;
+        size = 0;
+        internal = new KeyValuePair[ existing.length*2];
+        for (KeyValuePair kp : existing){
+            if ( kp != null)
+                put(kp.key, kp.value);
+        }
+    }
+
+    private void reduceSize() {
+        KeyValuePair[] existing = internal;
+        size = 0;
+        internal = new KeyValuePair[ existing.length/2];
+        for (KeyValuePair kp : existing){
+            if ( kp != null)
+                put(kp.key, kp.value);
+        }
     }
 }
