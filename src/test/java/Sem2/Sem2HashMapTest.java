@@ -19,7 +19,7 @@ public class Sem2HashMapTest {
     @Test
     public void testGetNull() {
         System.out.println( "testGetNull" );
-        String key = "kkk";
+        String key = "jjj";
         Sem2HashMap instance = new Sem2HashMap();
         Address expResult = null;
         Address result = instance.get( key );
@@ -29,7 +29,7 @@ public class Sem2HashMapTest {
     @Test
     public void testGetActual() {
         System.out.println( "testGetActual" );
-        String key = "kkk";
+        String key = "jjj";
         Sem2HashMap instance = new Sem2HashMap();
         instance.put( key, new Address( "Overvandet 7a" ) );
         String expResult = "Overvandet 7a";
