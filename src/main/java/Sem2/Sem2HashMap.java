@@ -15,7 +15,12 @@ public class Sem2HashMap {
     public Sem2HashMap() {
         internal = new KeyValuePair[ 3 ];
     }
-    
+    /**
+    Hent addresse ud fra navn.
+    Finder addressn på en person hvis vi kender hans navn
+    @param key not null
+    @return Address or null
+    */
     public Address get( String key ) {
         int index = key.hashCode() % internal.length;
         return internal[ index ].value;
